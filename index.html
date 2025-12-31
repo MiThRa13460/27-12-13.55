@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TEAM AGP - Endurance Strategy 24h v18.13</title>
+  <title>TEAM AGP - Endurance Strategy 24h v18.14</title>
   <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
@@ -442,7 +442,7 @@
     const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
     // ========== CONFIGURATION ==========
-    const VER = '17.1', SKEY = 'agp-v15';
+    const VER = '18.14', SKEY = 'agp-v18';
     
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyCPNMbkjte9jY9jMU6Nk3y7sOEOTEn2_6k",
@@ -463,7 +463,7 @@
       }
     } catch (e) { console.warn('Firebase init:', e); }
     
-    const TEAMS = ['AGP 1', 'AGP 2', 'AGP OvS'];
+    const TEAMS = ['AGP 1', 'AGP 2', 'AGP 3', 'AGP OvS'];
     
     // Images de profil des équipes (base64 ou URL)
     // === ASSOCIATIONS DÉFINITIVES ET CORRECTES ===
@@ -480,6 +480,7 @@
     const TEAM_COLORS = {
       'AGP 1': { primary: '#1a1a1a', secondary: '#ff00ff', number: '005' },
       'AGP 2': { primary: '#ffffff', secondary: '#ff69b4', number: '002' },
+      'AGP 3': { primary: '#0a2540', secondary: '#00d4ff', number: '003' },
       'AGP OvS': { primary: '#1a3a5c', secondary: '#ff00ff', number: '099' }
     };
     
@@ -516,10 +517,10 @@
     };
     const POSITIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
     const COLORS = ['#58a6ff', '#f0883e', '#3fb950', '#a371f7', '#f85149', '#79c0ff'];
-    const DEFAULT_PWD = { 'AGP 1': 'AGP1TEAM', 'AGP 2': 'AGP2TEAM', 'AGP OvS': 'AGPOVS' };
+    const DEFAULT_PWD = { 'AGP 1': 'AGP1TEAM', 'AGP 2': 'AGP2TEAM', 'AGP 3': 'AGP3TEAM', 'AGP OvS': 'AGPOVS' };
     const SPECTATOR_PWD = 'AGPVISION';
     const CREATOR_PWD = 'AGPMASTER2025';
-    const TEAM_PILOTS = { 'AGP 1': ['Fabien', 'Cédric', 'Tib', 'Quentin', 'Kevin'], 'AGP 2': ['Fafa', 'Clément', 'Bertrand', 'Lucas'], 'AGP OvS': ['JR', 'Noham', 'Eric', 'Gilles'] };
+    const TEAM_PILOTS = { 'AGP 1': ['Fabien', 'Cédric', 'Tib', 'Quentin', 'Kevin'], 'AGP 2': ['Fafa', 'Clément', 'Bertrand', 'Lucas'], 'AGP 3': ['Pilote 1', 'Pilote 2', 'Pilote 3', 'Pilote 4', 'Pilote 5', 'Pilote 6'], 'AGP OvS': ['JR', 'Noham', 'Eric', 'Gilles'] };
     
     // PNEUS - Couleurs F1 réalistes: Soft=blanc, Medium=jaune, Hard=rouge, Pluie=bleu
     const TIRES = [
@@ -1526,6 +1527,7 @@
         const allPasswords = { ...DEFAULT_PWD, ...passwords };
         if (input === 'AGP1TEAM') { onLogin({ type: 'team', canEdit: true, teams: ['AGP 1'], teamName: 'AGP 1' }, remember); return; }
         if (input === 'AGP2TEAM') { onLogin({ type: 'team', canEdit: true, teams: ['AGP 2'], teamName: 'AGP 2' }, remember); return; }
+        if (input === 'AGP3TEAM') { onLogin({ type: 'team', canEdit: true, teams: ['AGP 3'], teamName: 'AGP 3' }, remember); return; }
         if (input === 'AGPOVS') { onLogin({ type: 'team', canEdit: true, teams: ['AGP OvS'], teamName: 'AGP OvS' }, remember); return; }
         for (const [team, pwd] of Object.entries(allPasswords)) { if (pwd && input === pwd.toUpperCase()) { onLogin({ type: 'team', canEdit: true, teams: [team], teamName: team }, remember); return; } }
         setError('Code incorrect');
@@ -1562,6 +1564,7 @@
               <p style={{marginBottom:'4px'}}>📺 Spectateur → <span className="mono" style={{color:'var(--green)'}}>AGPVISION</span></p>
               <p style={{marginBottom:'4px'}}>🔵 AGP 1 → <span className="mono" style={{color:'var(--green)'}}>AGP1TEAM</span></p>
               <p style={{marginBottom:'4px'}}>🔴 AGP 2 → <span className="mono" style={{color:'var(--green)'}}>AGP2TEAM</span></p>
+              <p style={{marginBottom:'4px'}}>🟣 AGP 3 → <span className="mono" style={{color:'var(--green)'}}>AGP3TEAM</span></p>
               <p>⚪ AGP OvS → <span className="mono" style={{color:'var(--green)'}}>AGPOVS</span></p>
             </div>
           </div>
