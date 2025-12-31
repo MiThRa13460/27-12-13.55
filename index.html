@@ -2347,7 +2347,7 @@
                 </div>
                 <div style={{display:'flex',gap:'6px'}}>
                   <button className="btn btn-success btn-sm" style={{padding:'6px 10px',fontSize:'11px'}} onClick={handleScreenshot} title="Capture d'écran">📸</button>
-                  {canEdit && <button className="btn btn-primary btn-sm" style={{padding:'6px 10px',fontSize:'11px'}} onClick={onGenerate} disabled={!isCreator && (!settings?.validated || chronoState?.elapsed > 0 || chronoState?.isRunning)}>⚡</button>}
+                  {canEdit && <button className="btn btn-primary btn-sm" style={{padding:'6px 10px',fontSize:'11px'}} onClick={onGenerate} disabled={!isCreator && !settings?.validated}>⚡</button>}
                   {canEdit && <button className="btn btn-ghost btn-sm" style={{padding:'6px 10px',fontSize:'11px'}} onClick={onRecalc} disabled={!stints?.length}>🔄</button>}
                 </div>
               </div>
@@ -2975,7 +2975,10 @@
       
       const handleGenerate = () => {
         if (!team || !team.settings) return;
+        if (!team.pilotsValidated) { setConfirm({ title: 'Équipage non validé', message: 'Validez d\'abord l\'équipage dans l\'onglet Équipage.', onConfirm: () => { setMainTab('pilots'); setConfirm(null); } }); return; }
         if (!team.settings.validated) { setConfirm({ title: 'Paramètres non validés', message: 'Validez d\'abord les paramètres.', onConfirm: () => { setMainTab('settings'); setConfirm(null); } }); return; }
+        const activePilots = (team.pilots || []).filter(p => p?.name?.trim() && p.active !== false);
+        if (activePilots.length === 0) { setConfirm({ title: '⚠️ Aucun pilote actif', message: 'Ajoutez au moins un pilote avec un nom dans l\'onglet Équipage.', onConfirm: () => { setMainTab('pilots'); setConfirm(null); } }); return; }
         const completedStints = (team.stints || []).filter(s => s.completed);
         const isRaceRunning = chronoState.isRunning || chronoState.elapsed > 0;
         if (isRaceRunning && completedStints.length > 0) {
@@ -3021,7 +3024,9 @@
           return;
         }
         const startTime = team.settings.raceStartTime || '14:00'; const [startH, startM] = startTime.split(':').map(Number); const raceStart = new Date(); raceStart.setHours(startH, startM, 0, 0);
-        const newStints = genPlanning(team.pilots || [], team.settings); updateTeam({ stints: newStints, raceStartISO: raceStart.toISOString() });
+        const newStints = genPlanning(team.pilots || [], team.settings);
+        if (newStints.length === 0) { setConfirm({ title: '⚠️ Erreur de génération', message: 'Impossible de générer le planning. Vérifiez les paramètres (temps au tour, consommation, etc.).', onConfirm: () => { setMainTab('settings'); setConfirm(null); } }); return; }
+        updateTeam({ stints: newStints, raceStartISO: raceStart.toISOString() });
       };
       
       // Fonction Revenir - protège les stints complétés
@@ -3338,7 +3343,8 @@
               {canEdit && (
                 <div style={{marginTop:'20px',display:'flex',gap:'10px',flexWrap:'wrap',alignItems:'center',padding:'12px',background:'rgba(0,0,0,0.3)',borderRadius:'8px'}}>
                   <span className="help-tooltip" data-help="VALIDER ÉQUIPAGE - Confirme la liste des pilotes actifs pour cette course"><button className={'btn ' + (team.pilotsValidated ? 'btn-ghost' : 'btn-success')} onClick={() => updateTeam({ pilotsValidated: !team.pilotsValidated })}>{team.pilotsValidated ? '✓ Équipage validé' : '✓ VALIDER ÉQUIPAGE'}</button></span>
-                  <span className="help-tooltip" data-help="GÉNÉRER - Crée automatiquement le planning des relais selon vos paramètres"><button className="btn btn-primary" onClick={handleGenerate} disabled={chronoState.isRunning || chronoState.elapsed > 0 || !team.pilotsValidated || !team.settings.validated} style={{opacity: (chronoState.isRunning || chronoState.elapsed > 0) ? 0.3 : 1}}>⚡ GÉNÉRER PLANNING</button></span>
+                  <span className="help-tooltip" data-help="GÉNÉRER - Crée automatiquement le planning des relais selon vos paramètres"><button className="btn btn-primary" onClick={handleGenerate} disabled={!team.pilotsValidated || !team.settings.validated} style={{opacity: (!team.pilotsValidated || !team.settings.validated) ? 0.5 : 1}}>⚡ GÉNÉRER PLANNING</button></span>
+                  {(!team.pilotsValidated || !team.settings.validated) && <span style={{fontSize:'10px',color:'var(--red)'}}>⚠️ {!team.pilotsValidated ? 'Validez l\'équipage' : 'Validez les paramètres'}</span>}
                 </div>
               )}
             </div>
